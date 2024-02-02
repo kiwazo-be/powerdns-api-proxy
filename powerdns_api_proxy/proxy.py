@@ -47,7 +47,9 @@ pdns = PDNSConnector(
     config.pdns_api_url, config.pdns_api_token, config.pdns_api_verify_ssl
 )
 
-app = FastAPI(title='PowerDNS API Proxy', version='0.1.0')
+app = FastAPI(
+    title='PowerDNS API Proxy', version='0.1.0', docs_url=None, redoc_url=None
+)
 instrumentator = Instrumentator(
     should_group_status_codes=False,
 )
@@ -58,7 +60,9 @@ instrumentator.instrument(app)
 @app.on_event('startup')
 async def _startup():
     instrumentator.add(http_requests_total_environment())
-    instrumentator.expose(app)
+
+
+#    instrumentator.expose(app)
 
 
 # Patching HTTPException to be compatible with PowerDNS API errors
@@ -89,17 +93,6 @@ router_pdns = APIRouter(
 async def hello():
     return '''
     <html>
-        <head>
-            <title>PowerDNS API Proxy</title>
-        </head>
-        <body>
-            <center>
-            <h1>PowerDNS API Proxy</h1>
-            <p>| <a href="/docs">Swagger Docs</a></p>
-            <q>The Domain Name Server (DNS) is the Achilles heel of the Web.<br>
-            The important thing is that it's managed responsibly.</q>
-            </center>
-        </body>
     </html>
 '''
 
